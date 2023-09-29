@@ -29,7 +29,7 @@ def comp_histogr(tif_array):
 
 
 # print the histogram on the console
-def print_histogram(histogram, name):
+def print_histogram(histogram, name): # name is to daclare the source of the histogram
     plt.bar(range(len(histogram)), histogram, width=1.0, color='b')
     plt.xlabel('Pixel Value')
     plt.ylabel('Frequency')
