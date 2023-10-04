@@ -6,8 +6,8 @@ from scipy import signal
 
 # constants that define which exercise should be executed
 exercise_1_1 = False
-exercise_1_2 = True
-exercise_2 = False
+exercise_1_2 = False
+exercise_1_3 = True
 
 
 # read picture path
@@ -30,8 +30,17 @@ hg_filter = np.array([[1, 2, 1],
                       [1, 2, 1]])
 hg_filter = [[value * (1/16) for value in row] for row in hg_filter]
 
+#create img sharpening filters
+h1_filter = np.array([[0, -1, 0],
+                     [-1, 4, -1],
+                     [0, -1, 0]])
 
-def apply_low_pass_filter(picture_array, filter):
+h2_filter = np.array([[-1, -1, -1],
+                     [-1, 8, -1],
+                     [-1, -1, -1]])
+
+
+def apply_matrix_filter(picture_array, filter):
     """
     apply the defined filter to a picture.
     use ignore boarder technic
@@ -65,19 +74,19 @@ def plot_range(pixle_range, title):  # function to plot the 2-D Lists
 
 
 def plot_img(image_array, title):
-    plt.imshow(image_array)
+    plt.imshow(image_array, cmap='gray')
     plt.title(f'{title}')
     plt.show()
 
 
 def plot_img_uint8(image_array, title):
-    #scale all chanells seperatly
-    uint8_r = cv2.convertScaleAbs(image_array[:, :, 0], alpha=(255.0 / 65535.0))
-    uint8_g = cv2.convertScaleAbs(image_array[:, :, 1], alpha=(255.0 / 65535.0))
-    uint8_b = cv2.convertScaleAbs(image_array[:, :, 2], alpha=(255.0 / 65535.0))
-    # recombine the chanells to a single image
-    image_uint8 = cv2.merge([uint8_b, uint8_g, uint8_r])
-    plt.imshow(image_uint8)
+    #check image size
+    min_val = np.min(image_array)
+    max_val = np.max(image_array)
+    #convert to uint8 based on image size
+    image_uint8 = cv2.convertScaleAbs(image_array, alpha=(255.0 / (max_val - min_val)), beta=(-min_val * 255.0 / (max_val - min_val)))
+    image_uint8 = image_uint8.astype(np.uint8)
+    plt.imshow(image_uint8, cmap='gray')
     plt.title(f'{title}')
     plt.show()
 
@@ -85,11 +94,11 @@ def plot_img_uint8(image_array, title):
 if __name__ == '__main__':
     if exercise_1_1:
         plot_img(bloodcells_nparr, 'original')
-        plot_img(apply_low_pass_filter(bloodcells_nparr, hm_filter), 'hm_filtered, low pass')
-        plot_img(apply_low_pass_filter(bloodcells_nparr, hg_filter), 'hg_filtered, low pass')
+        plot_img(apply_matrix_filter(bloodcells_nparr, hm_filter), 'hm_filtered, low pass')
+        plot_img(apply_matrix_filter(bloodcells_nparr, hg_filter), 'hg_filtered, low pass')
         plot_img(xray_nparr, 'original')
-        plot_img(apply_low_pass_filter(xray_nparr, hm_filter), 'hm_filtered, low pass')
-        plot_img(apply_low_pass_filter(xray_nparr, hg_filter), 'hg_filtered, low pass')
+        plot_img(apply_matrix_filter(xray_nparr, hm_filter), 'hm_filtered, low pass')
+        plot_img(apply_matrix_filter(xray_nparr, hg_filter), 'hg_filtered, low pass')
 
     if exercise_1_2:
         plot_img(bloodcells_nparr, 'original')
@@ -103,6 +112,9 @@ if __name__ == '__main__':
         plot_img_uint8(apply_high_pass_filter(xray_nparr, hm_filter), 'hm_filtered, high pass, uint8')
         plot_img_uint8(apply_high_pass_filter(xray_nparr, hg_filter), 'hg_filtered, high pass, uint8')
 
-    if exercise_2:
-        pass
-
+    if exercise_1_3:
+        plot_img(bloodcells_nparr, 'original')
+        plot_img(apply_matrix_filter(bloodcells_nparr, h1_filter), 'h1_filtered')
+        plot_img(apply_matrix_filter(bloodcells_nparr, h2_filter), 'h2_filtered')
+        plot_img(apply_matrix_filter(bloodcells_nparr, h1_filter)[1:-1, 1:-1] + bloodcells_nparr, 'h1_filtered, addition')
+        plot_img(bloodcells_nparr - apply_matrix_filter(bloodcells_nparr, h1_filter)[1:-1, 1:-1], 'h1_filtered, subtraction')
