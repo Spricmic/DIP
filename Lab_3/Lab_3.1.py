@@ -23,7 +23,7 @@ xray_nparr = tf.imread(xray_path)
 hm_filter = np.array([[1, 1, 1],
                       [1, 1, 1],
                       [1, 1, 1]])
-hm_filter = [[value * (1/16) for value in row] for row in hm_filter]
+hm_filter = [[value * (1/9) for value in row] for row in hm_filter]
 
 hg_filter = np.array([[1, 2, 1],
                       [2, 4, 2],
@@ -32,12 +32,12 @@ hg_filter = [[value * (1/16) for value in row] for row in hg_filter]
 
 #create img sharpening filters
 h1_filter = np.array([[0, -1, 0],
-                     [-1, 4, -1],
-                     [0, -1, 0]])
+                      [-1, 4, -1],
+                      [0, -1, 0]])
 
 h2_filter = np.array([[-1, -1, -1],
-                     [-1, 8, -1],
-                     [-1, -1, -1]])
+                      [-1, 8, -1],
+                      [-1, -1, -1]])
 
 
 def apply_matrix_filter(picture_array, filter):
