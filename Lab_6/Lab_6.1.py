@@ -1,15 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import cv2
 from PIL import Image
-from scipy import fft
-from scipy import signal
 
 # constants that define which exercise should be executed
-exercise_1_1 = True
+exercise_1_1 = False
 exercise_1_2 = False
 exercise_1_3 = False
-exercise_1_4 = True
+exercise_1_4 = False
 
 # read picture path
 artery_path = 'pics/pics/arterie.tif'
@@ -46,11 +43,18 @@ def print_histogram(histogram, name):  # name is to declare the source of the hi
 
 
 def greyscale_to_color(greyscale_pic_nparray):
+    """
+    This function transforms assigness a grayscale picture color based on the value of a pixle.
+    There is probably a faster way to apply this using a CDF.
+    :param greyscale_pic_nparray: a greyscale picture converted to a np.array
+    :return: a three dimensional matrix with the RGB value for each pixle
+    """
     # Initialisiere leere RGB-Arrays mit den gleichen Dimensionen wie das Graustufenbild
     r_array = np.zeros_like(greyscale_pic_nparray)
     g_array = np.zeros_like(greyscale_pic_nparray)
     b_array = np.zeros_like(greyscale_pic_nparray)
     histogram, bins = np.histogram(greyscale_pic_nparray, bins=256, range=(0, 256))  # 256 für uint8
+
 
     colormap = np.array([[255, 0, 0],
                          [255, 0, 128],
@@ -69,35 +73,38 @@ def greyscale_to_color(greyscale_pic_nparray):
 
     colormap_count = 0
     pixel_count = 0
+    histogram_index = 0
     for value in histogram:
-        print(f'histogram value: {value}')
-        if pixel_count < pixels_per_color:
-            # print(f'count: {pixel_count} vs. max.color: {pixels_per_color}')
-            row_count = 0
-            for row in greyscale_pic_nparray:
-                column_count = 0
-                for pixel in row:
-                    if pixel == value:
-                        print(f'pixel value: {pixel}')
-                        r_array[row_count][column_count] = colormap[colormap_count][0]
-                        g_array[row_count][column_count] = colormap[colormap_count][1]
-                        b_array[row_count][column_count] = colormap[colormap_count][2]
-                        pixel_count += 1
-                    else:
-                        pass
-                    column_count += 1
-                row_count += 1
+        if value > 0:
+            if pixel_count < pixels_per_color:
+                row_count = 0
+                for row in greyscale_pic_nparray:
+                    column_count = 0
+                    for pixel in row:
+                        if pixel == histogram_index:
+                            r_array[row_count][column_count] = colormap[colormap_count][0]
+                            g_array[row_count][column_count] = colormap[colormap_count][1]
+                            b_array[row_count][column_count] = colormap[colormap_count][2]
+                            pixel_count += 1
+                        else:
+                            pass
+                        column_count += 1
+                    row_count += 1
+
+            else:
+                pixel_count = 0
+                colormap_count += 1
+            histogram_index += 1
 
         else:
-            pixel_count = 0
-            colormap_count += 1
-            print(colormap_count)
-            print(colormap[colormap_count][0])
+            histogram_index += 1
 
 
     # Erstelle ein 3D-Array für das Farbbild und fülle es mit den RGB-Daten
     color_pic_nparray = np.stack([r_array, g_array, b_array], axis=-1)
 
+    print('There is probably a faster way to apply this using a CDF.')
+    print('So one has not to itterrate trough all the pixles.')
     return color_pic_nparray
 
 
@@ -155,12 +162,18 @@ if __name__ == '__main__':
         greyscale_artery = artery.convert('L')
         greyscale_ctskull = ctskull.convert('L')
         greyscale_artery_nparr = np.asarray(greyscale_artery)
-        greyscale_artery_ctskull = np.asarray(greyscale_ctskull)
+        greyscale_ctskull_nparr = np.asarray(greyscale_ctskull)
 
-        colored_picture = greyscale_to_color(greyscale_artery_nparr)
+        colored_artery = greyscale_to_color(greyscale_artery_nparr)
+        colored_ctskull = greyscale_to_color(greyscale_ctskull_nparr)
 
-        plt.imshow(colored_picture)
+
+        plt.imshow(colored_artery)
         plt.title("artery colored")
+        plt.show()
+
+        plt.imshow(colored_ctskull)
+        plt.title("CTSkull colored")
         plt.show()
 
     else:
