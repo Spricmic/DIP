@@ -24,32 +24,36 @@ class HoughLines():
         self.maxThetaDegrees = int(180)
 
         self.radiusFromIndex = np.arange(self.minRadius, self.maxRadius + 1)
+        # print(self.radiusFromIndex)
         self.indexFromRadius = invert_lut(self.radiusFromIndex)
         self.angleFromIndex = np.arange(0, self.maxThetaDegrees)
         self.indexFromAngle = invert_lut(self.angleFromIndex)
 
         self.votingSpace = np.zeros((len(self.angleFromIndex), len(self.radiusFromIndex)), int)
-        self.normalVectors = self.__compute_normal_vectors__(self.angleFromIndex)
+        self.normalVectors = self.__compute_normal_vectors__(self.angleFromIndex)  # lines to test for match in point
         self.__vote_from_image__(img)
-        self.maximaOnVotingSpace = self.__find_peaks__(self.votingSpace)
+        self.maximaOnVotingSpace = self.__find_peaks__(self.votingSpace)  # hier werden die koordinaten der zu zeichnenden Linien gespeichert.
 
     def __compute_normal_vectors__(self, degrees):
+        # print(degrees)
         normalVectors = np.empty((len(degrees), 2), dtype=float)
         for index, thetaDegrees in enumerate(degrees):
             thetaRadians = np.radians(thetaDegrees)  # Convert degrees to radians
-            n_x = np.round(np.cos(thetaRadians))  # Calculate x-component of the normal vector
-            n_y = np.round(np.sin(thetaRadians))  # Calculate y-component of the normal vector
+            n_y = np.cos(thetaRadians)  # Calculate x-component of the normal vector
+            n_x = np.sin(thetaRadians)  # Calculate y-component of the normal vector
             normalVectors[index, :] = np.array([n_x, n_y])
+        # print(normalVectors)
         return normalVectors
 
-    def __vote_from_pixel__(self, imageCoordinateXY: np.ndarray, grayValue: int):
+
+    def __vote_from_pixel__(self, imageCoordinateXY: np.ndarray, greyValue: int):
         for angleDegrees in np.arange(0, self.maxThetaDegrees):
             thetaRadians = np.radians(angleDegrees)
             radius = int(
                 round(imageCoordinateXY[0] * np.cos(thetaRadians) + imageCoordinateXY[1] * np.sin(thetaRadians)))
             radiusIndex = self.indexFromRadius[radius]
             angleIndex = self.indexFromAngle[angleDegrees]
-            self.votingSpace[angleIndex, radiusIndex] += grayValue
+            self.votingSpace[angleIndex, radiusIndex] += greyValue
 
     def __vote_from_image__(self, img):
         for x in np.arange(0, self.imgDimensionX):
@@ -94,16 +98,22 @@ class HoughLines():
             y0 = b * rho
 
             line_direction = theta + 90
+            # print(line_direction)
             a_part = np.cos(np.radians(line_direction))
             b_part = np.sin(np.radians(line_direction))
 
+            # line point a
             x1 = int(x0 + halfLength * (-a_part))
             y1 = int(y0 + halfLength * (b_part))
+            # line point b
             x2 = int(x0 - halfLength * (-a_part))
             y2 = int(y0 - halfLength * (b_part))
 
             startPoint = np.array([x1, y1])
             endPoint = np.array([x2, y2])
+            print('start and endpoint:')
+            print(startPoint)
+            print(endPoint)
             cv.line(img, startPoint.astype(int), endPoint.astype(int), color=color, thickness=1)
 
     def show_found_lines(self, img):
@@ -116,6 +126,8 @@ class HoughLines():
         nr_lines = self.maximaOnVotingSpace.shape[0]
         for id, m in enumerate(self.maximaOnVotingSpace):
             color = tuple(255 * np.array(cmap(id / (nr_lines))[0:3]))
+            print('peak location in theta roh space:')
+            print(m)  # m sind die zu zeichnenden peaks im rho theta format.
             self.__draw_found_line__(drawingImage, m, color=color)
 
         plt.figure()
