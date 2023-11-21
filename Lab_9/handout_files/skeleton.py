@@ -100,6 +100,7 @@ def compute_co_occurrence_matrix(image):
             count = count + 4
 
     cooMat = cooMat / count
+    #print(cooMat)
     return cooMat
 
 
