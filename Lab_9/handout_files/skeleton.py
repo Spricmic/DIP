@@ -134,6 +134,8 @@ img_mc4 = plt.imread('C:/Users/michi/Documents/ZHAW_git/Semester_5/DIP/DIP/Lab_9
 images = [img_mc1, img_mc2, img_mc3, img_mc3]
 
 for image in images:
+    print('\n\nNext cell:')
     cooMatrix = compute_co_occurrence_matrix(image)
     energy, contrast, entropy, homogeneity = compute_texture_features(cooMatrix)
     plot_result(cooMatrix, energy, contrast, entropy, homogeneity)
+
