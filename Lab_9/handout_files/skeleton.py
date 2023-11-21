@@ -106,7 +106,7 @@ def compute_co_occurrence_matrix(image):
 def compute_texture_features(cooMat):
     energy = np.sum(cooMat**2)
     contrast = np.sum((np.arange(256) - np.arange(256)[:, np.newaxis])**2 * cooMat)
-    entropy = -np.sum(cooMat * np.log2(cooMat + 1e-10))
+    entropy = -np.sum(cooMat * np.log2(cooMat + 1e-10))  # kleine numer um division miit 0 zu verhindern
     homogeneity = np.sum(cooMat / (1 + np.abs(np.arange(256) - np.arange(256)[:, np.newaxis])))
 
     return energy, contrast, entropy, homogeneity
