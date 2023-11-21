@@ -36,9 +36,9 @@ def my_otsu(image):
             pixels_in_forground = np.sum(image_hist[index:])
             weight_forground = pixels_in_forground / pixels_in_image
             weight_background = 1 - weight_forground
-            mu_foreground = mu_foreground - value
-            mu_backgorund = mu_backgorund + value
-            between_class_variance = weight_background * weight_forground * (mu_backgorund - mu_foreground) ** 2
+            mu_backgorund = mu_backgorund + value  # TODO: anpassen mit gewichtung
+            mu_foreground = mu_foreground - value  # TODO: anpassen mit gewichtung
+            between_class_variance = weight_background * weight_forground * (mu_backgorund/ - mu_foreground) ** 2
 
             if max_between_class_variance < between_class_variance:
                 max_between_class_variance = between_class_variance

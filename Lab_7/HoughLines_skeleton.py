@@ -90,12 +90,11 @@ class HoughLines():
 
     def __draw_found_line__(self, img, houghPeakCoordinates, halfLength=200, color=(255, 255, 255)):
             rho, theta = houghPeakCoordinates  # Extract theta and rho from the given peak
-            # print(theta)
             a = np.cos(np.radians(theta))
             b = np.sin(np.radians(theta))
             # calculate the position of the point in the real picture
-            x0 = a * rho
-            y0 = b * rho
+            x0 = a * self.radiusFromIndex[rho]
+            y0 = b * self.radiusFromIndex[rho]
 
             line_direction = theta + 90
             # print(line_direction)
@@ -103,11 +102,11 @@ class HoughLines():
             b_part = np.sin(np.radians(line_direction))
 
             # line point a
-            x1 = int(x0 + halfLength * (-a_part))
-            y1 = int(y0 + halfLength * (b_part))
+            x1 = round(x0 + halfLength * (a_part))
+            y1 = round(y0 + halfLength * (b_part))
             # line point b
-            x2 = int(x0 - halfLength * (-a_part))
-            y2 = int(y0 - halfLength * (b_part))
+            x2 = round(x0 - halfLength * (a_part))
+            y2 = round(y0 - halfLength * (b_part))
 
             startPoint = np.array([x1, y1])
             endPoint = np.array([x2, y2])
