@@ -33,7 +33,7 @@ def my_otsu(image):
     for index, value in enumerate(image_hist):
         current_threshold = index
         if value != 0:
-            pixels_in_forground = np.sum(image_hist[index:])
+            pixels_in_forground = np.sum(image_h  ist[index:])
             weight_forground = pixels_in_forground / pixels_in_image
             weight_background = 1 - weight_forground
             mu_backgorund = mu_backgorund + value  # TODO: anpassen mit gewichtung
