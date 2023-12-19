@@ -1,13 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import cv2
+from mpl_toolkits.mplot3d import Axes3D
 
+import cv2
 from numpy.linalg import eig
 
 ##### Aspect Ratio and Extent #####
 
 # 1. Read image
-img_bone = plt.imread("C:/Users/michi/Documents/ZHAW_git/Semester_5/DIP/DIP/Lab_9/handout_files/aspectRatio/bone.tif")
+img_bone = plt.imread("aspectRatio/bone.tif")
 img_bone_gray = cv2.cvtColor(img_bone, cv2.COLOR_RGBA2GRAY)
 img_bone_gray = img_bone_gray.astype(np.float64) / np.max(img_bone_gray)
 plt.figure()
@@ -19,7 +20,7 @@ points = np.argwhere(img_bone_gray > 0.5)
 # Note that the matrix points have the dimension (number of image points x 2)
 #    points[:,0] ... y coordinates
 #    points[:,1] ... x coordinates
-# Change the order so that 
+# Change the order so that
 #    points[:,0] ... x coordinates
 #    points[:,1] ... y coordinates
 points = points[:, ::-1]  # coordinates of the pixels belonging to the bone[x,y]
@@ -126,10 +127,10 @@ def plot_result(cooMat, energy, contrast, entropy, homogeneity):
     print("energy: %5.5f\ncontrast: %5.5f\nentropy: %5.5f\nhomogeneity: %5.5f" % (energy, contrast, entropy, homogeneity))
 
 
-img_mc1 = plt.imread('C:/Users/michi/Documents/ZHAW_git/Semester_5/DIP/DIP/Lab_9/handout_files/musclecells/mc1.tif')
-img_mc2 = plt.imread('C:/Users/michi/Documents/ZHAW_git/Semester_5/DIP/DIP/Lab_9/handout_files/musclecells/mc2.tif')
-img_mc3 = plt.imread('C:/Users/michi/Documents/ZHAW_git/Semester_5/DIP/DIP/Lab_9/handout_files/musclecells/mc3.tif')
-img_mc4 = plt.imread('C:/Users/michi/Documents/ZHAW_git/Semester_5/DIP/DIP/Lab_9/handout_files/musclecells/mc4.tif')
+img_mc1 = plt.imread('musclecells/mc1.tif')
+img_mc2 = plt.imread('musclecells/mc2.tif')
+img_mc3 = plt.imread('musclecells/mc3.tif')
+img_mc4 = plt.imread('musclecells/mc4.tif')
 
 images = [img_mc1, img_mc2, img_mc3, img_mc3]
 
@@ -138,4 +139,3 @@ for image in images:
     cooMatrix = compute_co_occurrence_matrix(image)
     energy, contrast, entropy, homogeneity = compute_texture_features(cooMatrix)
     plot_result(cooMatrix, energy, contrast, entropy, homogeneity)
-

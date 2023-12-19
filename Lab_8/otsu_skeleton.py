@@ -9,10 +9,6 @@ def basic_thresholding(image):
     t = np.mean(image.flatten()).astype(int)
     print(t)
 
-    # Calculate the basic threshold
-
-    # <-- your input
-
     bin_img = image > t
     return bin_img, t
 
@@ -30,29 +26,28 @@ def my_otsu(image):
     mu_foreground = np.sum(image_hist)
     mu_backgorund = 0
     # until here
+    # link to video understandanding OTSU Methode: https://www.youtube.com/watch?v=jUUkMaNuHP8
     for index, value in enumerate(image_hist):
         current_threshold = index
         if value != 0:
-            pixels_in_forground = np.sum(image_h  ist[index:])
+            pixels_in_forground = np.sum(image_hist[index:])
             weight_forground = pixels_in_forground / pixels_in_image
             weight_background = 1 - weight_forground
-            mu_backgorund = mu_backgorund + value  # TODO: anpassen mit gewichtung
-            mu_foreground = mu_foreground - value  # TODO: anpassen mit gewichtung
+            mu_backgorund = mu_backgorund + value
+            mu_foreground = mu_foreground - value
             between_class_variance = weight_background * weight_forground * (mu_backgorund/ - mu_foreground) ** 2
 
             if max_between_class_variance < between_class_variance:
                 max_between_class_variance = between_class_variance
                 best_threshold = current_threshold
-    # link to video understandanding OTSU Methode: https://www.youtube.com/watch?v=jUUkMaNuHP8
+
     binary_image = image > best_threshold
     return binary_image, between_class_variance, best_threshold, separability
 
 
 def main():
-    # image = np.asarray(Image.open("polymersome_cells_10_36.png"))
     image = np.asarray(Image.open("thGonz.tif"))
 
-    # image = np.asarray(Image.open("binary_test_image.png"))
     if len(image.shape) == 3:
         image = image[:, :, 0]
 
